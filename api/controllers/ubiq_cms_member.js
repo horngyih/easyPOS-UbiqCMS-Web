@@ -1,4 +1,4 @@
-'use string';
+'use strict';
 
 function memberDetails(req, res){
     var customerID = req.swagger.params.customerID.value || '';
@@ -11,7 +11,7 @@ function memberDetails(req, res){
             membershipNo : '123',
             memberName : 'Doe, John',
             memberStatus : 'ACTIVE',
-            redemptionBalance : 1989.00
+            redemptionBalance : 1989.50
         };
         res.json( member );
     } else {

@@ -59,12 +59,16 @@ paths:
           description: The Transaction Header
           required: true
           schema:
-            type: object
+            $ref: "#/definitions/PostBillingTransaction"
       responses:
         "200" :
           description: Success
           schema:
             $ref: "#/definitions/PostBillingResponse"
+        "400" :
+          description: Error
+          schema:
+            $ref: "#/definitions/PostBillingErrorResponse"
   /swagger:
     x-swagger-pipe: swagger_raw
 # complex objects have schema definitions
@@ -90,14 +94,17 @@ definitions:
         type: string
       redemptionBalance:
         type: number
+        format: double
   MemberDetailErrorResponse:
     required:
       - message
     properties:
       message:
         type: string
-  PostBillingTransactionHeader:
+  PostBillingTransaction:
     required:
+      - posTerminalID
+      - customerID
       - billNo
       - outletCode
       - membershipNo
@@ -105,6 +112,10 @@ definitions:
       - serviceCharge
       - taxAmount
     properties:
+      posTerminalID:
+        type: string
+      customerID:
+        type: string
       billNo:
         type: string
       outletCode:
@@ -121,9 +132,66 @@ definitions:
         type: number
       taxAmount:
         type: number
-  PostBillingResponse:
+      details:
+        type: array
+        items:
+          $ref: "#/definitions/PostBillingTransactionDetails"
+      payments:
+        type: array
+        items:
+          $ref: "#/definitions/PostBillingPaymentDetails"
+  PostBillingTransactionDetails:
+    required:
+      - billNo
+      - itemCode
+      - price
+      - qty
+      - totalAmount
+    properties:
+      billNo:
+        type: string
+      itemCode:
+        type: string
+      price:
+        type: number
+      qty:
+        type: number
+      totalAmount:
+        type: number
+  PostBillingPaymentDetails:
+    required:
+      - billNo
+      - seqNo
+      - paymentMode
+      - amount
+    properties:
+      billNo:
+        type: string
+      seqNo:
+        type: string
+      paymentMode:
+        type: string
+      amount:
+        type: number
+  PostBillingErrorResponse:
     required:
       - message
     properties:
       message:
         type: string
+  PostBillingResponse:
+    required:
+      - billNo
+      - customerID
+      - posTerminalID
+      - redemptionBalance
+    properties:
+      billNo:
+        type: string
+      customerID:
+        type: string
+      posTerminalID:
+        type: string
+      redemptionBalance:
+        type: number
+        format: dobule
