@@ -1,7 +1,7 @@
 swagger: "2.0"
 info:
   version: "0.0.1"
-  title: Hello World App
+  title: Ubiq CMS Member Web Service
 # during dev, should point to your local machine
 host: localhost:10010
 # basePath prefixes all resource paths 
@@ -18,41 +18,110 @@ consumes:
 produces:
   - application/json
 paths:
-  /hello:
-    # binds a127 app logic to a route
-    x-swagger-router-controller: hello_world
+  /member:
+    x-swagger-router-controller: ubiq_cms_member
     get:
-      description: Returns 'Hello' to the caller
-      # used as the method name of the controller
-      operationId: hello
+      description: Returns Member Details, Status and Redemption Balance
+      operationId: memberDetails
       parameters:
-        - name: name
+        - name: customerID
           in: query
-          description: The name of the person to whom to say hello
-          required: false
+          description: The customer ID of the member
+          required: true
+          type: string
+        - name: posTerminalID
+          in : query
+          description : The POS Terminal making the query
+          required: true
           type: string
       responses:
-        "200":
+        "200" :
           description: Success
           schema:
-            # a pointer to a definition
-            $ref: "#/definitions/HelloWorldResponse"
-        # responses may fall through to errors
+            # A Pointer to a Response Definition
+            $ref: "#/definitions/MemberDetailResponse"
+        "404" :
+          description: Error
+          schema:
+            $ref: "#/definitions/MemberDetailErrorResponse"
         default:
           description: Error
           schema:
-            $ref: "#/definitions/ErrorResponse"
+            $ref: "#/definitions/MemberDetailErrorResponse"
+  /billing:
+    x-swagger-router-controller: ubiq_cms_billing
+    post:
+      description: Posts a billing transaction and deduct Redemptions
+      operationId: postTransaction
+      parameters:
+        - name: transactionHeader
+          in: body
+          description: The Transaction Header
+          required: true
+          schema:
+            type: object
+      responses:
+        "200" :
+          description: Success
+          schema:
+            $ref: "#/definitions/PostBillingResponse"
   /swagger:
     x-swagger-pipe: swagger_raw
 # complex objects have schema definitions
 definitions:
-  HelloWorldResponse:
+  MemberDetailResponse:
+    required:
+      - customerID
+      - posTerminalID
+      - membershipNo
+      - memberName
+      - memberStatus
+      - redemptionBalance
+    properties:
+      customerID:
+        type: string
+      posTerminalID:
+        type: string
+      membershipNo:
+        type: string
+      memberName:
+        type: string
+      memberStatus:
+        type: string
+      redemptionBalance:
+        type: number
+  MemberDetailErrorResponse:
     required:
       - message
     properties:
       message:
         type: string
-  ErrorResponse:
+  PostBillingTransactionHeader:
+    required:
+      - billNo
+      - outletCode
+      - membershipNo
+      - totalAmount
+      - serviceCharge
+      - taxAmount
+    properties:
+      billNo:
+        type: string
+      outletCode:
+        type: string
+      membershipNo:
+        type: string
+      transactionDate:
+        type: string
+      canceled:
+        type: string
+      totalAmount:
+        type: number
+      serviceCharge:
+        type: number
+      taxAmount:
+        type: number
+  PostBillingResponse:
     required:
       - message
     properties:
