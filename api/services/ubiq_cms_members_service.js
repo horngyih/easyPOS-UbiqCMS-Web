@@ -18,15 +18,26 @@ var config = {
 
 var sequelize = new Sequelize( database, username, password, config );
 
-var Member = sequelize.define( 'Member',{
-    memberName: Sequelize.STRING,
-    memberStatus: Sequelize.STRING,
-    redemptionBalance: Sequelize.DECIMAL
+var modelDefinitions = [
+    'MemberDetail'
+];
+
+var models = {
+};
+
+modelDefinitions.forEach( (modelDef)=>{
+    console.log( "Loading ", modelDef );
+    if( modelDef ){
+        var model = require( "../models/" + modelDef )(sequelize, Sequelize);
+        if( model ){
+            models[modelDef] = model;
+        }
+    }
 });
 
 function memberLookup( param ){
     var query = `EXEC memberLookup ${param}`;
-    return sequelize.query( query, Member )    
+    return sequelize.query( query, models.MemberDetail );   
 }
 
 memberLookup( 'J002' )
