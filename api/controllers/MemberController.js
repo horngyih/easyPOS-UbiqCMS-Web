@@ -1,5 +1,5 @@
 /* jshint esversion:6 */
-var memberService = require("../services/ubiq_cms_members_service");
+var memberService = require("../services/MemberService");
 
 function memberDetails(req, res){
     var customerID = req.swagger.params.customerID.value || '';

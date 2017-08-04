@@ -19,7 +19,7 @@ produces:
   - application/json
 paths:
   /member:
-    x-swagger-router-controller: ubiq_cms_member
+    x-swagger-router-controller: MemberController
     get:
       description: Returns Member Details, Status and Redemption Balance
       operationId: memberDetails
@@ -49,7 +49,7 @@ paths:
           schema:
             $ref: "#/definitions/MemberDetailErrorResponse"
   /billing:
-    x-swagger-router-controller: ubiq_cms_billing
+    x-swagger-router-controller: BillingController
     post:
       description: Posts a billing transaction and deduct Redemptions
       operationId: postTransaction

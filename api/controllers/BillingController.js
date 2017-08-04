@@ -1,5 +1,5 @@
 /* jshint esversion:6  */
-var memberService = require( "../services/ubiq_cms_members_service" );
+var memberService = require( "../services/MemberService" );
 
 function postTransaction( req, res ){
     var message = req.body || {};
