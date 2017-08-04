@@ -65,6 +65,10 @@ paths:
           description: Success
           schema:
             $ref: "#/definitions/PostBillingResponse"
+        "404" :
+          description: Error
+          schema:
+            $ref: "#/definitions/PostBillingErrorResponse"
         "400" :
           description: Error
           schema:

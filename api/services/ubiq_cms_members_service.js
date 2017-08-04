@@ -7,7 +7,7 @@ var username = process.env.CMSUSER || 'sa';
 var password = process.env.CMSPASS || 'd12@c0n15';
 
 var config = {
-    host: process.env.DBHOST || '172.17.142.141',
+    host: process.env.DBHOST || '172.17.130.200',
     dialect: process.env.DBTYPE || 'mssql',
     pool : {
         min: process.env.MINCONN || 0,
@@ -37,17 +37,54 @@ modelDefinitions.forEach( (modelDef)=>{
 
 function memberLookup( param ){
     var query = `EXEC memberLookup ${param}`;
-    return sequelize.query( query, models.MemberDetail );   
+    console.log( "Lookup ", param );
+    return new Promise((resolve,reject)=>{        
+        sequelize.query( query, models.MemberDetail )
+        .spread((result)=>{
+            if( result && result.length ){
+                resolve(result[0]);
+            } else {
+                resolve();
+            }
+        })
+        .catch(err=>{
+            reject(err);
+        });        
+    });
 }
 
-memberLookup( 'J002' )
-.spread( ( result ) =>{
-    if( result.length ){
-        console.log( result[0] );
-    }
-    process.exit(0);
-})
-.catch( err =>{
-    console.log( err );
-    process.exit(-1);
-});
+function postBilling( param ){
+    var query = `EXEC memberLookup ${param.customerID}`;
+    console.log( "Posting ", param );
+    return new Promise((resolve, reject)=>{
+        memberLookup(param.customerID)
+        .then((response)=>{
+            if(response){
+                sequelize.query( query, models.MemberDetail )
+                .spread((result)=>{
+                    console.log( "Result ", result );
+                    if(result && result.length ){
+                        resolve(result[0]);
+                    } else {
+                        resolve();
+                    }
+                })
+                .catch(err=>{
+                    reject(err);
+                });
+            } 
+            else 
+            {
+                reject("No such member");
+            }
+        })
+        .catch(err=>{
+            reject(err);
+        });
+    });
+}
+
+module.exports={
+    memberLookup: memberLookup,
+    postBilling: postBilling
+};
